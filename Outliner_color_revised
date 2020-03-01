@@ -1,0 +1,4 @@
+sel = cmds.ls(sl = True)
+for obj in sel:
+	cmds.setAttr(obj + '.useOutlinerColor', 1)
+	cmds.setAttr(obj + '.outlinerColor', 1, 1, 1)
