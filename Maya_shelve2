@@ -1,0 +1,255 @@
+global proc shelf_CV_OL () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "import maya.cmds as cmds\nfrom functools import partial\n\n\n# this ..." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "import maya.cmds as cmds\nfrom functools import partial\n\n\n# this ..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Cv_clr" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "C:/Users/yishan/Documents/maya/2020/prefs/icons/UvTrsf.jpg" 
+        -image1 "C:/Users/yishan/Documents/maya/2020/prefs/icons/UvTrsf.jpg" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import maya.cmds as cmds\nfrom functools import partial\n\n\n# this script brings up an interface, that lets the user choose the drawing overrides color\n# for any object in his maya scene. Especially when creating controllers, this comes in handy.\n# For any questions, feedback and critique regarding this script, feel free to send me a mail at mail@rigzilla.co.uk\n# Author: Stefan Wezel, April 2015\n# For further information on this script, use pythons help function and read the docstrings\n\n\nclass Color_Picker():\n\t\"\"\"\n\tin order to run the script either just execute it in the script editor,\n\tor save it to your maya scripts directory \n\t(default is: C:\\Users\\Swagosaur\\Documents\\your version\\scripts) under color_picker.py\n\tand then execute following lines:\n\timport color_picker as cp\n\treload(cp)\n\tcp.Color_Picker()\n\tfrom the script editor, or make a shelf button from it\n\t\"\"\"\n\n\n\tdef __init__(self):\n\n\t\t#class var\n\t\tself.widgets = {}\n\n\n\t\t#call on the build UI method\n\t\tself.build_UI()\n\n\n\tdef build_UI(self):\n\t\t\"\"\"\n\t\tcreates the UI\n\t\t\"\"\"\n\n\t\tif cmds.window(\"color_picker_UI\", exists = True):\n\n\t\t\tcmds.deleteUI(\"color_picker_UI\")\n\n\n\t\tself.widgets[\"window\"] = cmds.window(\"color_picker_UI\", title = \"Color\", w = 400, h = 120, mnb = False, mxb = False)\n\n\n\t\tself.widgets[\"mainLayout\"] = cmds.columnLayout(w = 400, h = 120)\n\t\tcmds.rowColumnLayout( numberOfColumns = 10 )\n\t\t\n\n\n\t\t#create buttons\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [0, 0, 0], c = partial(self.pick_color, [1] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.722, .722, .722], c = partial(self.pick_color, [3] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [0.502, .502, .502], c = partial(self.pick_color, [2] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.804, 0, .2], c = partial(self.pick_color, [4] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [0, 0, .396], c = partial(self.pick_color, [5] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.02, .02, .957], c = partial(self.pick_color, [6] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [0, .294, 0], c = partial(self.pick_color, [7] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.196, 0, 294], c = partial(self.pick_color, [8] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.784, 0, .784], c = partial(self.pick_color, [9] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.588, .294, .196], c = partial(self.pick_color, [10] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.234, .188, .188], c = partial(self.pick_color, [11] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.706, .196, 0], c = partial(self.pick_color, [12] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.980, .024, .024], c = partial(self.pick_color, [13] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.027, .973, .027], c = partial(self.pick_color, [14] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [0, .294, .588], c = partial(self.pick_color, [15]) ) \t\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.980, .980, .02], c = partial(self.pick_color, [17] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.02, .980, .980], c = partial(self.pick_color, [18] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.02, .980, .784], c = partial(self.pick_color, [19] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.961, .706, .706], c = partial(self.pick_color, [20] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.961, .706, .501], c = partial(self.pick_color, [21] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.973, .973, .413], c = partial(self.pick_color, [22] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [0, .686, .392], c = partial(self.pick_color, [23] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.588, .392, .196], c = partial(self.pick_color, [24] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.672, .672, .169], c = partial(self.pick_color, [25] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.392, .588, .196], c = partial(self.pick_color, [26] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.196, .672, .354], c = partial(self.pick_color, [27] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.173, .627, .627], c = partial(self.pick_color, [28] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.173, .392, .620], c = partial(self.pick_color, [29] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.427, .176, .627], c = partial(self.pick_color, [30] ) )\n\t\tself.widgets[\"colourButton\"] = cmds.button(label = \"\", w = 40, h = 40, bgc = [.627, .176, .400], c = partial(self.pick_color, [31] )  ) \n\n\n\t\t#show window\n\t\tcmds.showWindow(self.widgets[\"window\"])\n\n\n\n\t#define partial function\n\tdef pick_color(self, colors, *args):\n\t\t\"\"\"\n\t\tchecks if anything is selected, then draws overrideEnabled\n\t\t\"\"\"\n\t\t\n\t\tsel = cmds.ls(sl = True)\n\n\n\t\t#check if any valid object is selected\n\t\t#check for type additionally!! \n\t\tif len(sel) == 0:\n\t\t\tcmds.warning(\"Please select at least One valid object\")\n\t\t\treturn\n\t\t\t\n\n\t\t\n\t\t#loop selection and put in colors\n\t\tfor obj in sel:\n\t\t\tfor color in colors:\n\t\t\t\tcmds.setAttr(obj + '.overrideEnabled', 1)\n\t\t\t\tcmds.setAttr(obj + '.overrideColor', color)\n\n\n\n\nif __name__ == \"__main__\":\n\tColor_Picker()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "parent -s -r  // select transform node then the shape(curve) nod..." 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "parent -s -r  // select transform node then the shape(curve) nod..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "CvPrnt" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "parent -s -r  " 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+        -mi "User menuItem" ( "print(\" select transform node then the CVshape node\n\");" )
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0.224 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutl..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "RED" 
+        -overlayLabelColor 1 1 1 
+        -overlayLabelBackColor 1 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0.224 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n\n" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0.224 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutl..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "GREEN" 
+        -overlayLabelColor 0 0 0 
+        -overlayLabelBackColor 0.5353 1 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 0.224 1 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0.224 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutl..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "BLUE" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0.0871999 1 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 0 1 1; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0.224 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutl..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "PINK" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 1 0 1 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0 1 ; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -flexibleWidthType 3
+        -flexibleWidthValue 32
+        -enable 1
+        -width 35
+        -height 34
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 0.224 0.224 ; \n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -enableBackground 0
+        -backgroundColor 0 0 0 
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutl..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "YLLW" 
+        -overlayLabelColor 0 0 0 
+        -overlayLabelBackColor 1 1 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "string $nodes[] = `ls -selection`;\n\nsetAttr ($nodes[0]+\".useOutlinerColor\") true;\n\nsetAttr ($nodes[0] + \".outlinerColor\") 1 1 0;\n\n\n\nAEdagNodeCommonRefreshOutliners();\n" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+
+} 
+
