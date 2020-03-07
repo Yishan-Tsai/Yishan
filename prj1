@@ -1,0 +1,61 @@
+import MASH.api as mapi
+import maya.cmds as cmds
+
+
+#create a poly cube
+
+sel=cmds.ls(selection=True)
+
+cubes=cmds.polyCube(sx=1, sy=1, sz=1, w=1, h=1, d=1)
+
+#create a new MASH network
+mashNetwork = mapi.Network()
+mashNetwork.createNetwork(name="test", geometry="Repro")
+
+
+shape = cmds.listRelatives(sel[0],s=True)[0]
+mashNetwork.meshDistribute(shape, 6)
+cmds.setAttr(mashNetwork.distribute + '.floodMesh', 1)
+
+#add a World node
+offsetNode = mashNetwork.addNode("MASH_Offset")
+cmds.setAttr(offsetNode.name + '.rotateOffsetX', 360)
+cmds.setAttr(offsetNode.name + '.transformationSpace', 2)
+
+colorNode = mashNetwork.addNode("MASH_Color")
+cmds.setAttr(colorNode.name + '.color', 0.859,0.31,0.251 , type='double3')
+cmds.setAttr(colorNode.name + '.enableBackgroundColor', 1)
+cmds.setAttr(colorNode.name + '.backgroundColor', 0.239,0.663,0.576 , type='double3')
+
+
+vNode = mashNetwork.addNode("MASH_Visibility")
+
+F_falloff = offsetNode.addFalloff()
+cmds.setAttr(F_falloff+".innerRadius",0.8)
+cmds.connectAttr(F_falloff+".falloffOut",colorNode.name +".strengthPP[0]" )
+cmds.connectAttr(F_falloff+".falloffOut",vNode.name +".strengthPP[0]" )
+RMesh = cmds.ls("test_ReproMesh")[0]
+print RMesh
+
+
+#create a camera for projection and move back 50 unit
+c_prj = cmds.camera()
+cmds.move( 100, z=True )
+
+#make a texture
+
+rsMtl = cmds.shadingNode("RedshiftMaterial", asShader=True)
+rsSG = cmds.sets(name="rsSurfaceShader",renderable=True,noSurfaceShader=True,empty=True)
+cmds.connectAttr("%s.outColor"%rsMtl,"%s.surfaceShader"%rsSG)
+
+
+woodText = cmds.shadingNode('wood', asTexture=True)
+tdtext = cmds.shadingNode('place3dTexture', asUtility=True)
+cmds.connectAttr(tdtext+'.wim[0]', woodText+'.pm')
+cmds.connectAttr(woodText+'.outColor', rsMtl+'.diffuse_color', force=True)
+cmds.sets( RMesh, e=True, forceElement = rsSG )
+
+cmds.xform(tdtext,r=True, s=(100,100,100))
+
+cmds.hide(sel)
+
