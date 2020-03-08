@@ -1,4 +1,84 @@
-sel = cmds.ls(sl = True)
-for obj in sel:
-	cmds.setAttr(obj + '.useOutlinerColor', 1)
-	cmds.setAttr(obj + '.outlinerColor', 1, 1, 1)
+import maya.cmds as cmds
+
+if cmds.window("marker", exists = True):
+    cmds.deleteUI("marker")
+
+myWindow = cmds.window("marker",t="Bad Mesh Marker",w =300,h= 300)
+cmds.columnLayout(adj = True)
+cmds.separator( height=10, style='double')
+
+
+cmds.button( l='red', c= "red()", bgc=( 0.5, 0, 0))
+cmds.button( l='orange', c= "orange()", bgc=( 0.8, 0.3, 0))
+cmds.button( l='yellow', c= "yellow()", bgc=( 1, 1, 0))
+cmds.button( l='green', c= "green()", bgc=( 0, 0.8, 0))
+cmds.button( l='blue', c= "blue()", bgc=( 0, 0.8, 0.9))
+cmds.button( l='purple', c= "purple()", bgc=( 0.5, 0.2, 0.5))
+cmds.button( l='pink', c= "pink()", bgc=( 0.8, 0.4, 0.6))
+cmds.button( l='white', c= "white",bgc=(0.8, 0.8, 0.8))
+cmds.button( l='gray', c= "gray()", bgc=(0.1, 0.1, 0.1))
+
+
+
+
+cmds.showWindow(myWindow)
+
+#---------------------------------------------
+
+def red():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 1, 0, 0)
+
+#---------------------------------------------
+
+def orange():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 1, 0.5, 0)
+#---------------------------------------------
+
+def yellow():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 1, 1, 0)
+
+#---------------------------------------------
+
+def green():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 0, 1, 0)
+#---------------------------------------------
+
+def blue():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 0, 1, 1)
+
+#---------------------------------------------
+
+def purple():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 0.5, 0.2, 0.5)
+		
+#---------------------------------------------
+
+def pink():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 1, 0, 1)
+
+#---------------------------------------------
+
+def white():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 1, 1, 1)
+#---------------------------------------------
+
+def gray():
+	for obj in cmds.ls(sl = True):
+		cmds.setAttr(obj + '.useOutlinerColor', 1)
+		cmds.setAttr(obj + '.outlinerColor', 0.1, 0.1, 0.1)
