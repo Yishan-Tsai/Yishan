@@ -1,0 +1,181 @@
+import MASH.api as mapi
+import maya.cmds as cmds
+
+
+#create a poly cube
+
+sel=cmds.ls(selection=True)
+
+cubes=cmds.polyCube(sx=1, sy=1, sz=1, w=1, h=1, d=1)
+
+def make_mash():
+	#create a new MASH network
+	mashNetwork = mapi.Network()
+	mashNetwork.createNetwork(name="test", geometry="Repro")
+	
+	
+	shape = cmds.listRelatives(sel[0],s=True)[0]
+	mashNetwork.meshDistribute(shape, 6)
+	cmds.setAttr(mashNetwork.distribute + '.floodMesh', 1)
+	
+	#add a World node
+	offsetNode = mashNetwork.addNode("MASH_Offset")
+	cmds.setAttr(offsetNode.name + '.rotateOffsetX', 360)
+	cmds.setAttr(offsetNode.name + '.transformationSpace', 2)
+	
+	colorNode = mashNetwork.addNode("MASH_Color")
+	cmds.setAttr(colorNode.name + '.color', 0.859,0.31,0.251 , type='double3')
+	cmds.setAttr(colorNode.name + '.enableBackgroundColor', 1)
+	cmds.setAttr(colorNode.name + '.backgroundColor', 0.239,0.663,0.576 , type='double3')
+	
+	
+	vNode = mashNetwork.addNode("MASH_Visibility")
+	
+	F_falloff = offsetNode.addFalloff()
+	cmds.setAttr(F_falloff+".innerRadius",0.8)
+	cmds.connectAttr(F_falloff+".falloffOut",colorNode.name +".strengthPP[0]" )
+	cmds.connectAttr(F_falloff+".falloffOut",vNode.name +".strengthPP[0]" )
+	RMesh = cmds.ls("test_ReproMesh")[0]
+	return RMesh, F_falloff
+	
+RMesh = make_mash()[0]
+
+
+#create a camera for projection and move back 100 unit
+def prjCamera():
+	c_prj = cmds.camera()
+	cmds.move( 100, z=True )
+	return c_prj
+c_prj=prjCamera()
+
+
+#make a texture
+
+#----
+def material():
+	rsMt = cmds.shadingNode("RedshiftMaterial", asShader=True)
+	rsSG = cmds.sets(name="rsSurfaceShader",renderable=True,noSurfaceShader=True,empty=True)
+	cmds.connectAttr("%s.outColor"%rsMt,"%s.surfaceShader"%rsSG)
+	return rsMt, rsSG
+	
+rsMt=material()[0]
+rsSG=material()[1]
+
+def create_prjTexture():
+	prjNode=cmds.shadingNode("projection", n="projection", asUtility=True)
+	cmds.setAttr (prjNode+".projType", 8)
+	cmds.connectAttr (c_prj[1]+".message" ,prjNode+".linkedCamera")
+	cmds.connectAttr (prjNode+".outColor", rsMt+".diffuse_color")
+	return prjNode
+	
+prjNode=create_prjTexture() #is prjNode
+
+	
+
+def create_file2d_node():
+    file_node = cmds.shadingNode('file', asTexture=True, isColorManaged=True)
+    place2d_node = cmds.shadingNode('place2dTexture', asUtility=True)
+    cmds.connectAttr(place2d_node + '.coverage', file_node + '.coverage')
+    cmds.connectAttr(place2d_node + '.translateFrame', file_node + '.translateFrame')
+    cmds.connectAttr(place2d_node + '.rotateFrame', file_node + '.rotateFrame')
+    cmds.connectAttr(place2d_node + '.mirrorU', file_node + '.mirrorU')
+    cmds.connectAttr(place2d_node + '.mirrorV', file_node + '.mirrorV')
+    cmds.connectAttr(place2d_node + '.stagger', file_node + '.stagger')
+    cmds.connectAttr(place2d_node + '.wrapU', file_node + '.wrapU')
+    cmds.connectAttr(place2d_node + '.wrapV', file_node + '.wrapV')
+    cmds.connectAttr(place2d_node + '.repeatUV', file_node + '.repeatUV')
+    cmds.connectAttr(place2d_node + '.offset', file_node + '.offset')
+    cmds.connectAttr(place2d_node + '.rotateUV', file_node + '.rotateUV')
+    cmds.connectAttr(place2d_node + '.noiseUV', file_node + '.noiseUV')
+    cmds.connectAttr(place2d_node + '.vertexUvOne', file_node + '.vertexUvOne')
+    cmds.connectAttr(place2d_node + '.vertexUvTwo', file_node + '.vertexUvTwo')
+    cmds.connectAttr(place2d_node + '.vertexUvThree', file_node + '.vertexUvThree')
+    cmds.connectAttr(place2d_node + '.vertexCameraOne', file_node + '.vertexCameraOne')
+    cmds.connectAttr(place2d_node + '.outUV', file_node + '.uv')
+    cmds.connectAttr(place2d_node + '.outUvFilterSize', file_node + '.uvFilterSize')
+    cmds.connectAttr(file_node+".outColor", prjNode+".image")
+    
+    return file_node
+file_node = create_file2d_node()
+
+
+print RMesh
+
+
+cmds.sets(RMesh, e=True, forceElement=rsSG)
+cmds.hide(sel)
+
+'''
+def locateTexture():
+
+fileNode.fileTexutureName.set("path")
+'''
+
+#UI~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def create(win="texture",h=500, w=300):
+
+	if cmds.window(win, exists = True):
+	            cmds.deleteUI(win, window=True);
+	
+	window = cmds.window(win, title=win, widthHeight = (h,w));
+	
+	# add a form layout to window
+	mainForm = cmds.formLayout(numberOfDivisions=100, )  
+	
+	      
+	# add title
+	titleDisplay = cmds.text(label = "Import an image", align="center", font="boldLabelFont" );
+	# position title on the top left of the screen
+
+	cmds.formLayout(mainForm, edit=True, attachForm=(  [titleDisplay, 'top', 10],
+	                                                                [titleDisplay, 'left', 5],
+	                                                                [titleDisplay, 'right', 5]));
+	
+	#add sperator
+	titleSeperator = cmds.separator();
+	# position seperator
+	cmds.formLayout(mainForm, edit=True, attachControl=[titleSeperator, 'top', 10, titleDisplay],
+	                                                  attachForm=([titleSeperator, 'left', 5],
+	                                                             [titleSeperator, 'right', 5]));
+	                                                             
+	
+	
+	                                                          
+	##-- add button                                                            
+	btnFolderSet = cmds.button(label='Set Texture Folder', height=30, width=150, command="where()")
+	cmds.formLayout(mainForm, edit=True, attachControl=[btnFolderSet, 'top', 20, titleDisplay], attachForm=[btnFolderSet, 'left', 5])
+	
+	
+	txtFieldFolderLocation = cmds.textField(text="set location");
+	
+	
+	##--position textField
+	cmds.formLayout(mainForm, edit=True, attachControl=([txtFieldFolderLocation, 'top', 24, titleDisplay],
+                                                                 [txtFieldFolderLocation, 'left', 5, btnFolderSet]),
+                                                  attachForm=[txtFieldFolderLocation, 'right', 5]);
+
+
+
+	# add button
+	btnRelinkTextures = cmds.button(label='CHECK', height=30, width=150, command="CHECK()");
+	# position button
+	cmds.formLayout(mainForm, edit=True, attachControl=[btnRelinkTextures, 'top', 5, btnFolderSet], attachForm=[btnRelinkTextures, 'left', 5]);
+
+	
+	cmds.showWindow()
+	
+create()
+	
+
+
+def where():
+	path = cmds.fileDialog(m=0)
+	return path
+path = where()		
+	
+def CHECK():
+	cmds.setAttr(file_node+".fileTextureName", path)
+
+
