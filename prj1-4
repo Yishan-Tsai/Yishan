@@ -145,11 +145,11 @@ def create(win="texture",h=500, w=300):
 	
 	                                                          
 	##-- add button                                                            
-	btnFolderSet = cmds.button(label='Set Texture Folder', height=30, width=150, command="where()")
+	btnFolderSet = cmds.button(label='PASTE', height=30, width=150, command="paste()")
 	cmds.formLayout(mainForm, edit=True, attachControl=[btnFolderSet, 'top', 20, titleDisplay], attachForm=[btnFolderSet, 'left', 5])
 	
 	
-	txtFieldFolderLocation = cmds.textField(text="set location");
+	txtFieldFolderLocation = cmds.textField(text="Paste a location here");
 	
 	
 	##--position textField
@@ -160,32 +160,42 @@ def create(win="texture",h=500, w=300):
 
 
 	# add button
-	btnRelinkTextures = cmds.button(label='EXECUTE', height=30, width=150, command="CHECK()");
+	btnRelinkTextures = cmds.button(label='FIND', height=30, width=150, command="CHECK()");
 	# position button
 	cmds.formLayout(mainForm, edit=True, attachControl=[btnRelinkTextures, 'top', 5, btnFolderSet], attachForm=[btnRelinkTextures, 'left', 5]);
 
 	
 	cmds.showWindow()
+	return txtFieldFolderLocation
 	
 create()
+txtFieldFolderLocation=create()
+
 cmds.sets(RMesh, e=True, forceElement=rsSG) #no need
 #cmds.disconnectAttr("initialShadingGroup.dagSetMembers[*]", RMesh+"Shape"+".instObjGroups[*]")
 #cmds.connectAttr(RMesh+"Shape"+".instObjGroups[1]", rsSG+".dagSetMembers[1]")
 cmds.hide(sel)	
 
+#--------------don't copy to excute----------------------------------------------------------
+
+def paste():
+	basePath = cmds.textField(txtFieldFolderLocation, query=True, text=True)
+	print basePath
+	cmds.setAttr(file_node+".fileTextureName", basePath, type="string")
+paste()
+
 
 def where():
 	path = cmds.fileDialog()
 	return path
-path = where()		
+		
 
-print path
+#print path
 	
 def CHECK():
+	path = where()
 	#cmds.setAttr(file_node+".fileTextureName", str(path), type="string")
 	p= path
-
-	
 
 	cmds.setAttr(file_node+".fileTextureName", p, type="string")
 
