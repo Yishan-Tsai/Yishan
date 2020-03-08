@@ -57,9 +57,11 @@ def material():
 	rsSG = cmds.sets(name="rsSurfaceShader",renderable=True,noSurfaceShader=True,empty=True)
 	cmds.connectAttr("%s.outColor"%rsMt,"%s.surfaceShader"%rsSG)
 	return rsMt, rsSG
+
 	
-rsMt=material()[0]
-rsSG=material()[1]
+result=material()
+rsMt = result[0]
+rsSG = result[1]
 
 def create_prjTexture():
 	prjNode=cmds.shadingNode("projection", n="projection", asUtility=True)
@@ -99,11 +101,10 @@ def create_file2d_node():
 file_node = create_file2d_node()
 
 
-print RMesh
+#print RMesh
 
 
-cmds.sets(RMesh, e=True, forceElement=rsSG)
-cmds.hide(sel)
+
 
 '''
 def locateTexture():
@@ -159,7 +160,7 @@ def create(win="texture",h=500, w=300):
 
 
 	# add button
-	btnRelinkTextures = cmds.button(label='CHECK', height=30, width=150, command="CHECK()");
+	btnRelinkTextures = cmds.button(label='EXECUTE', height=30, width=150, command="CHECK()");
 	# position button
 	cmds.formLayout(mainForm, edit=True, attachControl=[btnRelinkTextures, 'top', 5, btnFolderSet], attachForm=[btnRelinkTextures, 'left', 5]);
 
@@ -167,15 +168,25 @@ def create(win="texture",h=500, w=300):
 	cmds.showWindow()
 	
 create()
-	
+cmds.sets(RMesh, e=True, forceElement=rsSG) #no need
+#cmds.disconnectAttr("initialShadingGroup.dagSetMembers[*]", RMesh+"Shape"+".instObjGroups[*]")
+#cmds.connectAttr(RMesh+"Shape"+".instObjGroups[1]", rsSG+".dagSetMembers[1]")
+cmds.hide(sel)	
 
 
 def where():
-	path = cmds.fileDialog(m=0)
+	path = cmds.fileDialog()
 	return path
 path = where()		
+
+print path
 	
 def CHECK():
-	cmds.setAttr(file_node+".fileTextureName", path)
+	#cmds.setAttr(file_node+".fileTextureName", str(path), type="string")
+	p= path
 
+	
 
+	cmds.setAttr(file_node+".fileTextureName", p, type="string")
+
+CHECK()
