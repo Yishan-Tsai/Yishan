@@ -1,0 +1,9 @@
+cv = cmds.ls(selection=True)
+
+print len(cv)
+
+for i in range(1,len(cv)):
+    CVshape = cmds.listRelatives(cv[i])    
+    cmds.parent(CVshape[0], cv[0], relative=True, shape=True)
+    cmds.delete(cv[i])
+    
